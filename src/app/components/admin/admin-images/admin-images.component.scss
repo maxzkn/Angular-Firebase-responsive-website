@@ -1,0 +1,105 @@
+.wrapper-main {
+    min-height: 100vh;
+    height: 100%;
+    width: 100%;
+    display: flex;
+}
+  
+  [type="file"] {
+    background: #d4ecfa;
+    border-radius: 5px;
+    color: transparent;
+    cursor: pointer;
+    transition: all 0.3s;
+    width: 200px;
+    height: 200px;
+    position: relative;
+    margin: 10px;
+    padding-top: 200px;
+
+    &::after,&::before {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        content: " ";
+        height: 45px;
+        width: 2px;
+        background-color: #333;
+        opacity: 0.2;
+        cursor: pointer;
+    }
+
+    &::after {
+        transform: rotate(-90deg);
+        top: 39%;
+        left: 49.6%;
+    }
+    
+    &:hover {
+      background-color: darken(#d4ecfa, 10%);
+    }
+  }
+
+.wrapper-images {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    margin-top: 50px;
+
+    .images {
+        padding: 10px;
+        position: relative;
+
+        img {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            transition: 0.3s;
+    
+            &:hover {
+                transform: scale(1.03);
+                transition: 0.3s;
+                cursor: pointer;
+                box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+                        0 6px 20px 0 rgba(0, 0, 0, 0.19);
+
+                ~ #deleteBtn {
+                    display: block;
+                }
+            }
+        }
+        
+        .displayDiv {
+            display: none;
+        }
+        
+        .deleteButton {
+            color: white;
+            border-radius: 4px;
+            width: 20px;
+            height: 20px;
+            background: tomato;
+            position: absolute;
+            cursor: pointer;
+            top: 10px;
+            right: 10px;
+            text-align: center;
+        }
+    }
+}
+
+// RESPONSIVE
+
+@media screen and (max-width: 860px) {
+    .wrapper-images {
+        margin-top: 150px;
+        margin-bottom: 50px;
+    }
+}
+
+@media screen and (max-width: 570px) {
+    .wrapper-images {
+        margin-top: 110px;
+    }
+}

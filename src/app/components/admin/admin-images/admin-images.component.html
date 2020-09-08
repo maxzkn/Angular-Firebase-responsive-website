@@ -1,0 +1,24 @@
+<div class="wrapper-main">
+    <div class="container">
+        <div class="wrapper-images">
+            <input type="file"
+                   id="file"
+                   (change)="selectPicture($event)"
+                   name="image"
+                   autocomplete="off"
+                   accept="image/*"/>
+            <div class="images" *ngFor="let photo of photos; let i = index"> <!--async???-->
+                <div>
+                    <img src="{{ photo.url }}"
+                         alt="image_{{ i + 1 }}"
+                         #imageDelete>
+                    <div class="deleteButton displayDiv"
+                         (mouseover)="displayDiv($event)"
+                         (mouseout)="displayDiv($event)"
+                         id="deleteBtn"
+                         (click)="deletePicture(imageDelete)">-</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
