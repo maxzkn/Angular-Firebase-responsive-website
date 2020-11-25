@@ -1,0 +1,43 @@
+.wrapper-main {
+  min-height: 100vh;
+  width: 100%;
+  -webkit-transition: 0.5s;
+  transition: 0.5s;
+  margin-top: 140px;
+}
+
+.wrapper-main table {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  min-width: 500px;
+}
+
+.wrapper-main table th.mat-sort-header-sorted {
+  color: black;
+}
+
+.wrapper-main table th.mat-header-cell,
+.wrapper-main table td.mat-cell,
+.wrapper-main table td.mat-footer-cell {
+  text-align: left;
+  max-width: 300px;
+}
+
+.wrapper-main .wrapper-input {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.wrapper-main .wrapper-input .mat-form-field {
+  font-size: 14px;
+  width: 90%;
+}
+
+@media screen and (max-width: 570px) {
+  .wrapper-main {
+    margin-top: 90px;
+  }
+}
+/*# sourceMappingURL=admin-articles.component.css.map */

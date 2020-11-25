@@ -1,37 +1,59 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/firestore';
+
+import {
+  AngularFirestore,
+  AngularFirestoreDocument,
+} from '@angular/fire/firestore';
+
 import { AngularFireAuth } from '@angular/fire/auth';
 
 import { User } from 'src/app/models/user'; // optional
-import { Observable, of, merge } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
-  
   user$: Observable<User>;
-  constructor(private afs: AngularFirestore, private afAuth: AngularFireAuth) {
+  loggedIn: boolean = false;
+
+  constructor(
+    private afs: AngularFirestore,
+    private afAuth: AngularFireAuth,
+    private router: Router
+  ) {
+    // console.log(this.afAuth.authState.subscribe(a => console.log(a.uid, a.email)));
     this.user$ = this.afAuth.authState.pipe(
-      switchMap(user => { // o jeigu nenaudoti switchMap?
-        console.log('authService constructor: ' + user.email);
-          // Logged in
+      switchMap((user) => {
+        // o jeigu nenaudoti switchMap? kam jis cia reikalingas?
+        // Logged in
         if (user) {
-          return this.afs.doc<User>(`users/${user.uid}`).valueChanges(); // kam cia graziname info apie user?
+          console.log('authService constructor: ' + user.email);
+          return this.afs.doc<User>(`users/${user.uid}`).valueChanges(); // cia graziname info apie user?
         } else {
           // Logged out
           return of(null);
         }
-      }));
+      })
+    );
   }
 
-  loginViaEmail(email, password){
-    return this.afAuth.signInWithEmailAndPassword(email, password).then(
-      (user) => {
-        console.log('signInWithEmailAndPassword: ' + user);
-      }
-    );
+  loginViaEmail(email, password) {
+    return this.afAuth
+      .signInWithEmailAndPassword(email, password)
+      .then((user) => {
+        // console.log('signInWithEmailAndPassword: ' + user);
+      })
+      .catch(function (error) {
+        console.log('Firebase login error: ', error);
+        let errorCode = error.code;
+        let errorMessage = error.message;
+        window.alert(
+          `Error code: ${errorCode}, Error message: ${errorMessage}`
+        );
+      });
   }
 
   //1.
@@ -39,33 +61,75 @@ export class AuthService {
   // naudoti formoje username, email, password.
   // signup firebase panel reikalauja tik 2 parametru email, password.
   signupViaEmail(form) {
-    return this.afAuth.createUserWithEmailAndPassword(form.email, form.password)
-    .then(result => {
+    return this.afAuth
+      .createUserWithEmailAndPassword(form.email, form.password)
+      .then((result) => {
         let user = {
-          uid: result.user.uid, 
+          uid: result.user.uid,
           email: result.user.email,
           username: form.username,
-          signedVia: 'email'
-        }
+          signedVia: 'email',
+        };
         return this.updateUserData(user);
-      }
-    )
+      })
+      .catch(function (error) {
+        console.log('Firebase signup error: ', error);
+        let errorCode = error.code;
+        let errorMessage = error.message;
+        window.alert(
+          `Error code: ${errorCode}, Error message: ${errorMessage}`
+        );
+      });
+  } // tai createUserWithEmailAndPassword dar neissaugoja nauja user DB?
+
+  //issaugome papildoma prisijungusio (?) ar uzsiregistruojancio vartotojo informacija
+  //musu duomenu bazeje
+  private updateUserData(user) {
+    // sukuriame lentele su jau prisijungusio varototojo unikaliu ID
+    const userRef: AngularFirestoreDocument<User> = this.afs.doc(
+      `users/${user.uid}`
+    );
+    //Papildoma informacija kuria norime irasyti
+    // i duomenu baze apie musu vartotoja
+    const data = {
+      uid: user.uid,
+      email: user.email,
+      username: user.username,
+      lastSeen: Date.now(),
+      signedVia: user.signedVia,
+      roles: {
+        guest: true,
+      },
+    };
+    //jeigu jau egzistavo toks vartotojas, mes nekuriame naujo
+    // o sujungiame (merge:true) su pries tai egzistavusia informacija. - kodel nenaudojame if ?
+    return userRef.set(data, { merge: true });
   }
 
-  signUpViaFacebook(){
-
+  logoutUser() {
+    this.afAuth
+      .signOut()
+      .then(() => {
+        console.log('You have been logged out.');
+        this.router.navigate(['/']);
+      })
+      .catch((error) => {
+        console.log('Log out error: ', error);
+      });
   }
 
   //2. Forgot password
   //Naudoti su egzistuojanciu email.
   resetPassword(email) {
     return this.afAuth.sendPasswordResetEmail(email).then(() => {
-      alert(`Password reset link has been sent to ${email}`);
-    })
+      alert(
+        `Password reset link for the user ${this.user$} has been sent to ${email}`
+      );
+    });
   }
 
-  //funkcijos padesencios issiaiskinti vartotojo role
-  public isAdmin(user: User){
+  //funkcijos padesiancios issiaiskinti vartotojo role
+  isAdmin(user: User) {
     const role = ['admin'];
     return this.checkAuthorization(user, role);
   }
@@ -73,38 +137,14 @@ export class AuthService {
   private checkAuthorization(user: User, allowedRoles: string[]): boolean {
     if (!user) return false;
     if (user['roles'] == undefined) return false;
-    // console.log('user roles: '+user['roles']);
+    // console.log('user roles: ' + user['roles']);
     for (const role of allowedRoles) {
-      if ( user['roles'][role] ) {
-        return true
+      // kodel const, o ne let?
+      if (user['roles'][role]) {
+        // tas pats kas tikrinti user['roles'].admin? ir user['roles'].guest
+        return true;
       }
     }
-    return false
-  }
-
-
-  //issaugome papildoma prisijungusio ar uzsiregistruojancio vartotojo informacija
-  //musu duomenu bazeje
-  private updateUserData(user) {
-    // sukuriame lentele su jau prisijungusio varototojo unikaliu ID
-    const userRef: AngularFirestoreDocument<User> = this.afs.doc(`users/${user.uid}`);
-    //Papildoma informacija kuria norime irasyti
-    // i duomenu baze apie musu vartotoja
-    const data = { 
-      uid: user.uid, 
-      email: user.email, 
-      username: user.username, 
-      lastSeen: Date.now(),
-      signedVia: user.signedVia,
-      roles: {
-        guest: true
-      }
-    } 
-    //jeigu jau egzistavo toks vartotojas, mes nekuriame naujo
-    // o sujungiame (merge:true) su pries tai egzistavusia informacija.
-    return userRef.set(data, { merge: true });
+    return false;
   }
 }
-// sukurti UI admin
-// sukurti image manage (istrinti, ikelti)
-// articles (crud);

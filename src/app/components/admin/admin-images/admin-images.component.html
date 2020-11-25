@@ -1,24 +1,42 @@
-<div class="wrapper-main">
-    <div class="container">
-        <div class="wrapper-images">
-            <input type="file"
-                   id="file"
-                   (change)="selectPicture($event)"
-                   name="image"
-                   autocomplete="off"
-                   accept="image/*"/>
-            <div class="images" *ngFor="let photo of photos; let i = index"> <!--async???-->
-                <div>
-                    <img src="{{ photo.url }}"
-                         alt="image_{{ i + 1 }}"
-                         #imageDelete>
-                    <div class="deleteButton displayDiv"
-                         (mouseover)="displayDiv($event)"
-                         (mouseout)="displayDiv($event)"
-                         id="deleteBtn"
-                         (click)="deletePicture(imageDelete)">-</div>
-                </div>
-            </div>
-        </div>
+<div class="wrapper-main" [ngStyle]="applyMargin()">
+  <div class="container">
+    <div class="wrapper-images">
+      <div *ngIf="uploadProgress | async as progress" id="upload" class="uploadProgress">
+        <mat-progress-bar id="progressBar" mode="determinate" [value]="progress"></mat-progress-bar>
+        <!-- {{ hi(progress) }} -->
+      </div>
+      <div class="images">
+        <input
+          type="file"
+          id="file"
+          (change)="selectPicture($event)"
+          name="image"
+          autocomplete="off"
+          accept="image/*"
+        />
+      </div>
+      <div class="images" *ngFor="let photo of photos; let i = index">
+        <img src="{{ photo.url }}" alt="image_{{ i + 1 }}" />
+        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="delete-button">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="deletePicture(photo)">
+            <mat-icon>delete</mat-icon>
+            <span>Delete</span>
+          </button>
+        </mat-menu>
+        <!-- <div
+          title="Delete"
+          class="deleteButton displayDiv"
+          (mouseover)="displayDiv($event)"
+          (mouseout)="displayDiv($event)"
+          id="deleteBtn"
+          (click)="deletePicture(photo)"
+        >
+          X
+        </div> -->
+      </div>
     </div>
+  </div>
 </div>

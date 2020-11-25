@@ -1,0 +1,66 @@
+.wrapper-main {
+  min-height: 100vh;
+  width: 100%;
+  -webkit-transition: 0.5s;
+  transition: 0.5s;
+  margin-top: 140px;
+}
+
+.wrapper-main .header {
+  text-align: center;
+}
+
+.wrapper-main .header h2 {
+  font-size: 22px;
+  font-weight: 300;
+  padding: 10px;
+}
+
+.wrapper-main form .full-width {
+  width: 100%;
+}
+
+.wrapper-main form .mat-form-field {
+  padding-top: 6px;
+}
+
+.wrapper-main form .addArticleBtn {
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+
+.wrapper-main form .upload {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: end;
+      -ms-flex-align: end;
+          align-items: flex-end;
+  margin-bottom: 15px;
+}
+
+.wrapper-main form .upload .fileTitle {
+  border-bottom: 1px dotted black;
+  margin-left: 10px;
+  -webkit-box-flex: 1;
+      -ms-flex: 1 1 auto;
+          flex: 1 1 auto;
+  font-style: italic;
+  color: #3f51b5;
+}
+
+.wrapper-main form .editor-wrapper {
+  padding-top: 10px;
+}
+
+.wrapper-main form .editor-wrapper #errorPosition {
+  position: unset;
+  padding: 0 1em;
+}
+
+@media screen and (max-width: 570px) {
+  .wrapper-main {
+    margin-top: 90px;
+  }
+}
+/*# sourceMappingURL=admin-article-new.component.css.map */

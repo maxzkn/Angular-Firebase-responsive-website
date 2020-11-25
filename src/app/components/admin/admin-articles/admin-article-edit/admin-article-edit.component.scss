@@ -1,0 +1,60 @@
+.wrapper-main {
+  min-height: 100vh;
+  width: 100%;
+  transition: 0.5s;
+  margin-top: 140px;
+
+  .header {
+    text-align: center;
+
+    h2 {
+      font-size: 22px;
+      font-weight: 300;
+      padding: 10px;
+    }
+  }
+
+  form {
+    .full-width {
+      width: 100%;
+    }
+
+    .mat-form-field {
+      padding-top: 6px;
+    }
+
+    .addArticleBtn {
+      margin-top: 10px;
+      margin-bottom: 15px;
+    }
+
+    .upload {
+      display: flex;
+      align-items: flex-end;
+      margin-bottom: 15px;
+
+      .fileTitle {
+        border-bottom: 1px dotted black;
+        margin-left: 10px;
+        flex: 1 1 auto;
+        font-style: italic;
+        color: #3f51b5;
+      }
+    }
+
+    .editor-wrapper {
+      padding-top: 10px;
+
+      #errorPosition {
+        position: unset;
+        padding: 0 1em;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 570px) {
+  .wrapper-main {
+    margin-top: 90px;
+  }
+}

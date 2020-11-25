@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../validators/custom-validators'
 import { AuthService } from 'src/app/services/auth.service';
 import { Router } from '@angular/router';
+import { HamburgerService } from 'src/app/services/hamburger.service';
 
 @Component({
   selector: 'app-login',
@@ -14,32 +15,32 @@ export class LoginComponent implements OnInit {
   minPswLength: number = 8;
   maxPswLength: number = 16;
   allowedSpecial: string = "*.!@#$%^&(){}\:;<>,.?~_+-=|\]["
-  // email: string;
-  // password: string;
+  _hidePassword: boolean = true;
 
   constructor(private formBuilder: FormBuilder,
     private router: Router,
-    private auth: AuthService) { }
+    private auth: AuthService,
+    private hamburger: HamburgerService) { }
 
   ngOnInit(): void {
     this.loginForm = this.formBuilder.group({
-      'email': [null, Validators.compose([Validators.required, 
-                                          Validators.email])],
+      'email': [null, Validators.compose([Validators.required,
+      Validators.email])],
       'password': [null, Validators.compose([Validators.required,
-                                           Validators.minLength(this.minPswLength),
-                                           Validators.maxLength(this.maxPswLength),
-                                           CustomValidators.passwordValidator(/\d/, {'hasNumber': true}),
-                                           CustomValidators.passwordValidator(/[A-Z]/, {'hasCapital': true}),
-                                           CustomValidators.passwordValidator(/[a-z]/, {'hasLower': true}),
-                                           CustomValidators.passwordValidator(/[*.!@#$%^&(){}\:;<>,.?~_+-=|\][]+/, {'hasSpecial': true})])]
+      Validators.minLength(this.minPswLength),
+      Validators.maxLength(this.maxPswLength),
+      CustomValidators.passwordValidator(/\d/, { 'hasNumber': true }),
+      CustomValidators.passwordValidator(/[A-Z]/, { 'hasCapital': true }),
+      CustomValidators.passwordValidator(/[a-z]/, { 'hasLower': true }),
+      CustomValidators.passwordValidator(/[*.!@#$%^&(){}\:;<>,.?~_+-=|\][]+/, { 'hasSpecial': true })])]
     });
   }
 
   onSubmit(form: FormGroup) {
     // window.alert('email: ' + form.value.email +
     //              '\npassword: ' + form.value.password);
-    if(form.valid){
-      this.auth.loginViaEmail(form.value.email, form.value.password).then(()=>{
+    if (form.valid) {
+      this.auth.loginViaEmail(form.value.email, form.value.password).then(() => {
         this.router.navigate(['/admin']);
       })
     }
@@ -49,11 +50,7 @@ export class LoginComponent implements OnInit {
     this.router.navigate(['/resetpsw']);
   }
 
-  // onSubmit(form: any) {
-  //   this.email = form.email;
-  //   this.password = form.password;
-
-  //   window.alert('email: ' + this.email +
-  //                ' password: ' + this.password);
-  // }
+  hidePassword() {
+    this._hidePassword = !this._hidePassword;
+  }
 }
